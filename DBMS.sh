@@ -39,7 +39,12 @@ function createDB {
   echo -e "Enter Database Name: \c"
   read dbName
   mkdir ./DBMS/$dbName
-  echo "Database Created Successfully"
+  if [[ $? == 0 ]] 
+  then
+    echo "Database Created Successfully"
+  else
+    echo "Error Creating Database $dbName"
+  fi
   mainMenu
 }
 
@@ -84,10 +89,12 @@ function tablesMenu {
   echo -e "Enter Choice: \c"
   read ch
   case $ch in
-    1)  selectDB ;;
-    2)  createDB ;;
-    3)  dropDB ;;
-    4)  ls ./DBMS ; mainMenu;;
+    1)  createTable ;;
+    2)  ;;
+    3)  ;;
+    4)  ;;
+    5)  ;;
+    6)  ;;
     7) clear; mainMenu ;;
     8) exit ;;
     *) echo " Wrong Choice " ; mainMenu;
@@ -95,4 +102,30 @@ function tablesMenu {
   
 }
 
+function createTable {
+  echo -e "Enter Table Name \c"
+  read tableName
+  echo -e "Enter Number of Columns \c"
+  read colsNum
+  counter=1
+  seperator="|"
+    while [ $counter -le $colsNum ]
+    do
+     echo -e "Enter Name of Column Number $counter:\c"
+     read colName
+     temp=$temp$colName$seperator
+     ((counter++))
+    done
+    touch $tableName
+    echo -e $temp >> $tableName
+  if [[ $? == 0 ]] 
+  then
+    echo "Table Created Successfully"
+  else
+    echo "Error Creating Table $tableName"
+  fi
+  tablesMenu
+}
+
 mainMenu
+
