@@ -1,7 +1,8 @@
-mkdir DBMS 2>>> ./error.log
+mkdir DBMS 2>> ./error.log
 clear
+echo " -- Welcome To OUR DBMS --"
 function mainMenu() {
-  echo -e "\n\n+-------------------------------+"
+  echo -e "\n\n+---------Main Menu-------------+"
   echo "| 1. Select DB                  |"
   echo "| 2. Create DB                  |"
   echo "| 3. Rename DB                  |"
@@ -40,7 +41,7 @@ function createDB {
   echo -e "Enter Database Name: \c"
   read dbName
   mkdir ./DBMS/$dbName
-  if [[ $? == 0 ]] 
+  if [[ $? == 0 ]]
   then
     echo "Database Created Successfully"
   else
@@ -63,7 +64,6 @@ function renameDB {
   mainMenu
 }
 
-
 function dropDB {
   echo -e "Enter Database Name: \c"
   read dbName
@@ -77,7 +77,7 @@ function dropDB {
 }
 
 function tablesMenu {
-  echo -e "\n\n+-------------------------------+"
+  echo -e "\n\n+--------Tables Menu------------+"
   echo "| 1. Create New Table           |"
   echo "| 2. Insert Into Table          |"
   echo "| 3. Select From Table          |"
@@ -100,7 +100,7 @@ function tablesMenu {
     8) exit ;;
     *) echo " Wrong Choice " ; mainMenu;
   esac
-  
+
 }
 
 function createTable {
@@ -119,7 +119,7 @@ function createTable {
     done
     touch $tableName
     echo -e $temp >> $tableName
-  if [[ $? == 0 ]] 
+  if [[ $? == 0 ]]
   then
     echo "Table Created Successfully"
   else
@@ -129,4 +129,3 @@ function createTable {
 }
 
 mainMenu
-
