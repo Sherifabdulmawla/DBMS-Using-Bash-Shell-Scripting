@@ -92,10 +92,10 @@ function tablesMenu {
   case $ch in
     1)  createTable ;;
     2)  ;;
-    3)  ;;
+    3)  clear; selectMenu ;;
     4)  ;;
     5)  ;;
-    6)  ;;
+    6)  dropTable ;;
     7) clear; mainMenu ;;
     8) exit ;;
     *) echo " Wrong Choice " ; mainMenu;
@@ -108,24 +108,79 @@ function createTable {
   read tableName
   echo -e "Enter Number of Columns \c"
   read colsNum
-  counter=1
-  seperator="|"
+  re='^[0-9]+$'
+  if [[ $colsNum =~ $re ]]
+  then
+    counter=1
+    seperator="|"
     while [ $counter -le $colsNum ]
     do
-     echo -e "Enter Name of Column Number $counter:\c"
-     read colName
-     temp=$temp$colName$seperator
-     ((counter++))
+    echo -e "Enter Name of Column Number $counter:\c"
+    read colName
+    temp=$temp$colName$seperator
+    ((counter++))
     done
-    touch $tableName
+    touch $tableName 2>>./error.log
     echo -e $temp >> $tableName
+    if [[ $? == 0 ]]
+    then
+      echo "Table Created Successfully"
+      tablesMenu
+    else
+      echo "Error Creating Table $tableName"
+      tablesMenu
+    fi
+  else
+    echo "The Value you entered is not a valid number"
+    createTable
+  fi
+  
+}
+
+function dropTable {
+  echo -e "Enter Table Name: \c"
+  read tName
+  rm $tName 2>>./error.log
   if [[ $? == 0 ]]
   then
-    echo "Table Created Successfully"
+    echo "Table Dropped Successfully"
   else
-    echo "Error Creating Table $tableName"
+    echo "Error Dropping Table $tName"
   fi
   tablesMenu
+}
+
+function selectMenu {
+  echo -e "\n\n+---------------Select Menu--------------------+"
+  echo "| 1. Select All Columns of a Table             |"
+  echo "| 2. Select Specific Column from a Table       |"
+  echo "| 3. Select From Table under condition         |"
+  echo "| 4. Aggregate Function for a Specific Column  |"
+  echo "| 5. Back To Main Menu                         |"
+  echo "| 6. Exit                                      |"
+  echo "+----------------------------------------------+"
+  echo -e "Enter Choice: \c"
+  read ch
+  case $ch in
+    1)  selectAll ;;
+    2)  ;;
+    3)  ;;
+    4)  ;;
+    5) clear; mainMenu ;;
+    6) exit ;;
+    *) echo " Wrong Choice " ; mainMenu;
+  esac
+}
+
+function selectAll {
+  echo -e "Enter Table Name: \c"
+  read tName
+  column -t -s '|' $tName 2>>./error.log
+  if [[ $? != 0 ]]
+  then
+    echo "Error Displaying Table $tName"
+  fi
+  selectMenu
 }
 
 mainMenu
