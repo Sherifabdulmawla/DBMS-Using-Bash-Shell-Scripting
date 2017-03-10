@@ -4,7 +4,7 @@ mkdir DBMS 2>> ./.error.log
 clear
 echo "Welcome To DBMS"
 echo -e "\nAUTHOR\n\tWritten by: Islam Wahid & Sherif Abdulmawla.\n\tContact us on Github @IslamWahid and @Sherifabdulmawla\n\nCOPYRIGHT\n\tCopyright © 2017 Free Software Foundation, Inc.\n\tLicense GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.\n\tThis is free software: you are free to change and redistribute it.  \n\tThere is NO WARRANTY, to the extent permitted by law."
-function mainMenu() {
+function mainMenu {
   echo -e "\n+---------Main Menu-------------+"
   echo "| 1. Select DB                  |"
   echo "| 2. Create DB                  |"
@@ -202,6 +202,33 @@ function insert {
     colKey=$( awk 'BEGIN{FS="|"}{if(NR=='$i') print $3}' .$tableName)
     echo -e "$colName ($colType) = \c"
     read data
+
+    #Validate Input
+    if [[ $colType == "int" ]]; then
+      while ! [[ $data =~ ^[0-9]+$ ]]; do
+        echo -e "invalid DataType !!"
+        echo -e "$colName ($colType) = \c"
+        read data
+      done
+    fi
+
+    if [[ $colKey == "PK" ]]; then
+      while [[ true ]]; do
+        awk 'BEGIN {FS = "|"; ORS=" "} {if (NR!=1)print $''}' $tableName #choose data from table
+        awk 'BEGIN{FS="|";ORS=" "}{if(NR!=1)print $'$i'}' $tableName
+        awk 'BEGIN{FS="|";ORS=" "}{if(NR!=1)print $1}'
+        if [[ $data =~ ^[`awk 'BEGIN{FS="|";ORS=" "}{if(NR!=1)print '$i'}' $tableName `]$ ]]; then
+          echo "in alist"
+        else
+          echo "not in alist"
+        fi
+        # echo -e "invalid input for Primary Key !!"
+        echo -e "$colName ($colType) = \c"
+        read data
+      done
+    fi
+
+    #Set row
     if [[ $i == $colsNum ]]; then
       row=$row$data$rSep
     else
@@ -258,7 +285,7 @@ function selectCol {
   read tName
   echo -e "Enter Column Number: \c"
   read colNum
-  awk 'BEGIN{FS="|"}{print $'$colNum'}' $tName 
+  awk 'BEGIN{FS="|"}{print $'$colNum'}' $tName
   selectMenu
 }
 
@@ -300,13 +327,13 @@ function allCond {
     then
       echo -e "\nEnter required VALUE: \c"
       read val
-      res=$(awk 'BEGIN{FS="|"}{if ($'$fid$op$val') print $0}' $tName 2>>./.error.log |  column -t -s '|') 
+      res=$(awk 'BEGIN{FS="|"}{if ($'$fid$op$val') print $0}' $tName 2>>./.error.log |  column -t -s '|')
       if [[ $res == "" ]]
       then
         echo "Value Not Found"
         selectCon
       else
-        awk 'BEGIN{FS="|"}{if ($'$fid$op$val') print $0}' $tName 2>>./.error.log |  column -t -s '|' 
+        awk 'BEGIN{FS="|"}{if ($'$fid$op$val') print $0}' $tName 2>>./.error.log |  column -t -s '|'
         selectCon
       fi
     else
@@ -334,7 +361,7 @@ function specCond {
     then
       echo -e "\nEnter required VALUE: \c"
       read val
-      res=$(awk 'BEGIN{FS="|"; ORS="\n"}{if ($'$fid$op$val') print $'$fid'}' $tName 2>>./.error.log |  column -t -s '|') 
+      res=$(awk 'BEGIN{FS="|"; ORS="\n"}{if ($'$fid$op$val') print $'$fid'}' $tName 2>>./.error.log |  column -t -s '|')
       if [[ $res == "" ]]
       then
         echo "Value Not Found"
@@ -351,4 +378,3 @@ function specCond {
 }
 
 mainMenu
-
