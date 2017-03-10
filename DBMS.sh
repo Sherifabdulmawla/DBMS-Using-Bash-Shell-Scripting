@@ -171,7 +171,7 @@ function createTable {
     echo "The Value you entered is not a valid number"
     createTable
   fi
-  
+
 }
 
 function dropTable {
@@ -200,13 +200,4 @@ function insert {
   done
 }
 
-function dropTable {
-  echo -e "Table Name: \c"
-  read tableName
-  if ! [[ -f $tableName ]]; then
-    echo "Table $tableName isn't existed ,choose another Table"
-    tablesMenu
-  fi
-  rm $tablesName .$tableName
-}
 mainMenu
