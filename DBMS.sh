@@ -125,7 +125,7 @@ function createTable {
 
     echo -e "Type of Column $colName: "
     select var in "int" "str"
-    do
+      do
       case $var in
         int ) colType="int";break;;
         str ) colType="str";break;;
@@ -190,18 +190,29 @@ function insert {
     echo "Table $tableName isn't existed ,choose another Table"
     tablesMenu
   fi
-  start=1
   colsNum=`awk 'END{print NR}' .$tableName`
   sep="|"
   rSep="\n"
-  for i in {$start..$colsNum}; do
-    echo "$i"
-    # colName= `awk 'BEGIN{FS="|"}{if(NR==2) print $1}' .$tableName`
-    # colType= `awk 'BEGIN{FS="|"}{if(NR==2) print $2}' .$tableName`
-    # colKey= `awk 'BEGIN{FS="|"}{if(NR==2) print $3}' .$tableName`
-    echo "Name:$colName,Type:$colType,key:$colKey"
+  for (( i = 2; i <= $colsNum; i++ )); do
+    colName=$(awk 'BEGIN{FS="|"}{ if(NR=='$i') print $1}' .$tableName)
+    colType=$( awk 'BEGIN{FS="|"}{if(NR=='$i') print $2}' .$tableName)
+    colKey=$( awk 'BEGIN{FS="|"}{if(NR=='$i') print $3}' .$tableName)
+    echo -e "$colName ($colType) = \c"
+    read data
+    if [[ $i == $colsNum ]]; then
+      row=$row$data$rSep
+    else
+      row=$row$data$sep
+    fi
   done
-
+  echo -e $row >> $tableName
+  if [[ $? == 0 ]]
+  then
+    echo "Data Inserted Successfully"
+  else
+    echo "Error Inserting Data into Table $tableName"
+  fi
+  tablesMenu
 }
 
 function selectMenu {
