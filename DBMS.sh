@@ -1,6 +1,9 @@
+#!/bin/bash
+# A simple databases management system using Bash Shell scripting by @IslamWahid & @Sherifabdulmawla
 mkdir DBMS 2>> ./.error.log
 clear
-echo " -- Welcome To OUR DBMS --"
+echo "Welcome To DBMS"
+echo -e "\nAUTHOR\n\tWritten by: Islam Wahid & Sherif Abdulmawla.\n\tContact us on Github @IslamWahid and @Sherifabdulmawla\n\nCOPYRIGHT\n\tCopyright © 2017 Free Software Foundation, Inc.\n\tLicense GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.\n\tThis is free software: you are free to change and redistribute it.  \n\tThere is NO WARRANTY, to the extent permitted by law."
 function mainMenu() {
   echo -e "\n+---------Main Menu-------------+"
   echo "| 1. Select DB                  |"
@@ -348,3 +351,4 @@ function specCond {
 }
 
 mainMenu
+
