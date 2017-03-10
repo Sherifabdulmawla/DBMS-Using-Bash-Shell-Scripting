@@ -33,7 +33,6 @@ function selectDB {
   else
     echo "Database $dbName wasn't found"
     mainMenu
-
   fi
 }
 
@@ -159,19 +158,14 @@ function createTable {
   echo -e $metaData  >> .$tableName
   touch $tableName
   echo -e $temp >> $tableName
-    if [[ $? == 0 ]]
-    then
-      echo "Table Created Successfully"
-      tablesMenu
-    else
-      echo "Error Creating Table $tableName"
-      tablesMenu
-    fi
+  if [[ $? == 0 ]]
+  then
+    echo "Table Created Successfully"
+    tablesMenu
   else
-    echo "The Value you entered is not a valid number"
-    createTable
+    echo "Error Creating Table $tableName"
+    tablesMenu
   fi
-
 }
 
 function dropTable {
@@ -194,10 +188,9 @@ function insert {
     echo "Table $tableName isn't existed ,choose another Table"
     tablesMenu
   fi
-  for colName in `awk ' BEGIN{FS="|" ; ORS=" "} {if(NR!=1)print $1} ' $tableName`
-  do
-    echo "$colName"
-  done
+
+  colNumber=`awk 'END{print NR}' .$tableName`
+  echo "$colNumber"
 }
 
 mainMenu
