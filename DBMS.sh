@@ -254,7 +254,8 @@ function updateTable {
     echo "Not Found"
     tablesMenu
   else
-    
+    echo -e "Enter FIELD name to set: \c"
+    read newValue
   fi
 
   echo -e "Enter required FIELD name: \c"
@@ -265,24 +266,19 @@ function updateTable {
     echo "Not Found"
     tablesMenu
   else
-    echo -e "\nSupported Operators: [==, !=, >, <, >=, <=] \nSelect OPERATOR: \c"
-    read op
-    if [[ $op == "==" ]] || [[ $op == "!=" ]] || [[ $op == ">" ]] || [[ $op == "<" ]] || [[ $op == ">=" ]] || [[ $op == "<=" ]]
+
+    echo -e "\nEnter required VALUE: \c"
+    read val
+    res=$(awk 'BEGIN{FS="|"; ORS="\n"}{if ($'$fid$op$val') print $'$fid'}' $tName 2>>./.error.log |  column -t -s '|')
+    if [[ $res == "" ]]
     then
-      echo -e "\nEnter required VALUE: \c"
-      read val
-      res=$(awk 'BEGIN{FS="|"; ORS="\n"}{if ($'$fid$op$val') print $'$fid'}' $tName 2>>./.error.log |  column -t -s '|')
-      if [[ $res == "" ]]
-      then
-        echo "Value Not Found"
-      else
-        awk 'BEGIN{FS="|"; ORS="\n"}{if ($'$fid$op$val') print $'$fid'}' $tName 2>>./.error.log |  column -t -s '|'
-      fi
-      tablesMenu
+      echo "Value Not Found"
     else
-      echo "Unsupported Operator\n"
-      tablesMenu
+      #############I stopped here but check the above ##########################
+      sed -i 's///' $tName 2>>./.error.log |  column -t -s '|'
     fi
+    tablesMenu
+
   fi
 
 }
