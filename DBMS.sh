@@ -190,9 +190,17 @@ function insert {
     echo "Table $tableName isn't existed ,choose another Table"
     tablesMenu
   fi
+  colsNum=`awk 'END{print NR}' .$tableName`
+  sep="|"
+  rSep="\n"
+  for i in {1..$colsNum..1}; do
+    echo "$i"
+    # colName= `awk 'BEGIN{FS="|"}{if(NR==2) print $1}' .$tableName`
+    # colType= `awk 'BEGIN{FS="|"}{if(NR==2) print $2}' .$tableName`
+    # colKey= `awk 'BEGIN{FS="|"}{if(NR==2) print $3}' .$tableName`
+    echo "Name:$colName,Type:$colType,key:$colKey"
+  done
 
-  colNumber=`awk 'END{print NR}' .$tableName`
-  echo "$colNumber"
 }
 
 function selectMenu {
