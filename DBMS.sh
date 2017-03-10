@@ -214,7 +214,7 @@ function insert {
 
     if [[ $colKey == "PK" ]]; then
       while [[ true ]]; do
-        if [[ $data =~ ^[`awk 'BEGIN{FS="|" ; ORS=" "}{if(NR != 1)print $(('$i'-1))}' $tableName`]$ || $data == "" ]]; then
+        if [[ $data =~ ^[`awk 'BEGIN{FS="|" ; ORS=" "}{if(NR != 1)print $(('$i'-1))}' $tableName`]$ ]]; then
           echo -e "invalid input for Primary Key !!"
         else
           break;
@@ -242,7 +242,49 @@ function insert {
 }
 
 function updateTable {
-  
+  echo -e "Select specific column from TABLE Where FIELD(OPERATOR)VALUE \n"
+  echo -e "Enter Table Name: \c"
+  read tName
+
+  echo -e "Enter FIELD name to set: \c"
+  read setField
+  fid=$(awk 'BEGIN{FS="|"}{if(NR==1){for(i=1;i<=NF;i++){if($i=="'$setField'") print i}}}' $tName)
+  if [[ $fid == "" ]]
+  then
+    echo "Not Found"
+    tablesMenu
+  else
+    
+  fi
+
+  echo -e "Enter required FIELD name: \c"
+  read field
+  fid=$(awk 'BEGIN{FS="|"}{if(NR==1){for(i=1;i<=NF;i++){if($i=="'$field'") print i}}}' $tName)
+  if [[ $fid == "" ]]
+  then
+    echo "Not Found"
+    tablesMenu
+  else
+    echo -e "\nSupported Operators: [==, !=, >, <, >=, <=] \nSelect OPERATOR: \c"
+    read op
+    if [[ $op == "==" ]] || [[ $op == "!=" ]] || [[ $op == ">" ]] || [[ $op == "<" ]] || [[ $op == ">=" ]] || [[ $op == "<=" ]]
+    then
+      echo -e "\nEnter required VALUE: \c"
+      read val
+      res=$(awk 'BEGIN{FS="|"; ORS="\n"}{if ($'$fid$op$val') print $'$fid'}' $tName 2>>./.error.log |  column -t -s '|')
+      if [[ $res == "" ]]
+      then
+        echo "Value Not Found"
+      else
+        awk 'BEGIN{FS="|"; ORS="\n"}{if ($'$fid$op$val') print $'$fid'}' $tName 2>>./.error.log |  column -t -s '|'
+      fi
+      tablesMenu
+    else
+      echo "Unsupported Operator\n"
+      tablesMenu
+    fi
+  fi
+
 }
 
 function selectMenu {
