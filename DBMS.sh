@@ -97,7 +97,7 @@ function tablesMenu {
     2)  createTable ;;
     3)  insert;;
     4)  clear; selectMenu ;;
-    5)  ;;
+    5)  updateTable;;
     6)  ;;
     7)  dropTable;;
     8) clear; cd ../.. 2>>./.error.log; mainMenu ;;
@@ -176,7 +176,7 @@ function createTable {
 function dropTable {
   echo -e "Enter Table Name: \c"
   read tName
-  rm $tName 2>>./.error.log
+  rm $tName .$tName 2>>./.error.log
   if [[ $? == 0 ]]
   then
     echo "Table Dropped Successfully"
@@ -205,7 +205,7 @@ function insert {
 
     #Validate Input
     if [[ $colType == "int" ]]; then
-      while ! [[ $data =~ ^[0-9]+$ ]]; do
+      while ! [[ $data =~ ^[0-9]*$ ]]; do
         echo -e "invalid DataType !!"
         echo -e "$colName ($colType) = \c"
         read data
@@ -214,15 +214,11 @@ function insert {
 
     if [[ $colKey == "PK" ]]; then
       while [[ true ]]; do
-        awk 'BEGIN {FS = "|"; ORS=" "} {if (NR!=1)print $''}' $tableName #choose data from table
-        awk 'BEGIN{FS="|";ORS=" "}{if(NR!=1)print $'$i'}' $tableName
-        awk 'BEGIN{FS="|";ORS=" "}{if(NR!=1)print $1}'
-        if [[ $data =~ ^[`awk 'BEGIN{FS="|";ORS=" "}{if(NR!=1)print '$i'}' $tableName `]$ ]]; then
-          echo "in alist"
+        if [[ $data =~ ^[`awk 'BEGIN{FS="|" ; ORS=" "}{if(NR != 1)print $(('$i'-1))}' $tableName`]$ || $data == "" ]]; then
+          echo -e "invalid input for Primary Key !!"
         else
-          echo "not in alist"
+          break;
         fi
-        # echo -e "invalid input for Primary Key !!"
         echo -e "$colName ($colType) = \c"
         read data
       done
@@ -243,6 +239,10 @@ function insert {
     echo "Error Inserting Data into Table $tableName"
   fi
   tablesMenu
+}
+
+function updateTable {
+  
 }
 
 function selectMenu {
