@@ -1,4 +1,4 @@
-mkdir DBMS 2>> ./error.log
+mkdir DBMS 2>> ./.error.log
 clear
 echo " -- Welcome To OUR DBMS --"
 function mainMenu() {
@@ -26,7 +26,7 @@ function mainMenu() {
 function selectDB {
   echo -e "Enter Database Name: \c"
   read dbName
-  cd ./DBMS/$dbName 2>>./error.log
+  cd ./DBMS/$dbName 2>>./.error.log
   if [[ $? == 0 ]]; then
     echo "Database $dbName was Successfully Selected"
     tablesMenu
@@ -54,7 +54,7 @@ function renameDB {
   read dbName
   echo -e "Enter New Database Name: \c"
   read newName
-  mv ./DBMS/$dbName ./DBMS/$newName 2>>./error.log
+  mv ./DBMS/$dbName ./DBMS/$newName 2>>./.error.log
   if [[ $? == 0 ]]; then
     echo "Database Renamed Successfully"
   else
@@ -66,7 +66,7 @@ function renameDB {
 function dropDB {
   echo -e "Enter Database Name: \c"
   read dbName
-  rm -r ./DBMS/$dbName 2>>./error.log
+  rm -r ./DBMS/$dbName 2>>./.error.log
   if [[ $? == 0 ]]; then
     echo "Database Dropped Successfully"
   else
@@ -77,26 +77,28 @@ function dropDB {
 
 function tablesMenu {
   echo -e "\n+--------Tables Menu------------+"
-  echo "| 1. Create New Table           |"
-  echo "| 2. Insert Into Table          |"
-  echo "| 3. Select From Table          |"
-  echo "| 4. Update Table               |"
-  echo "| 5. Delete From Table          |"
-  echo "| 6. Drop Table                 |"
-  echo "| 7. Back To Main Menu          |"
-  echo "| 8. Exit                       |"
+  echo "| 1. Show Existing Tables           |"
+  echo "| 2. Create New Table           |"
+  echo "| 3. Insert Into Table          |"
+  echo "| 4. Select From Table          |"
+  echo "| 5. Update Table               |"
+  echo "| 6. Delete From Table          |"
+  echo "| 7. Drop Table                 |"
+  echo "| 8. Back To Main Menu          |"
+  echo "| 9. Exit                       |"
   echo "+-------------------------------+"
   echo -e "Enter Choice: \c"
   read ch
   case $ch in
-    1)  createTable ;;
-    2)  insert;;
-    3)  clear; selectMenu ;;
-    4)  ;;
+    1)  ls . ;;
+    2)  createTable ;;
+    3)  insert;;
+    4)  clear; selectMenu ;;
     5)  ;;
-    6)  dropTable;;
-    7) clear; mainMenu ;;
-    8) exit ;;
+    6)  ;;
+    7)  dropTable;;
+    8) clear; mainMenu ;;
+    9) exit ;;
     *) echo " Wrong Choice " ; mainMenu;
   esac
 
@@ -171,7 +173,7 @@ function createTable {
 function dropTable {
   echo -e "Enter Table Name: \c"
   read tName
-  rm $tName 2>>./error.log
+  rm $tName 2>>./.error.log
   if [[ $? == 0 ]]
   then
     echo "Table Dropped Successfully"
@@ -193,4 +195,46 @@ function insert {
   echo "$colNumber"
 }
 
+function selectMenu {
+  echo -e "\n\n+---------------Select Menu--------------------+"
+  echo "| 1. Select All Columns of a Table             |"
+  echo "| 2. Select Specific Column from a Table       |"
+  echo "| 3. Select From Table under condition         |"
+  echo "| 4. Aggregate Function for a Specific Column  |"
+  echo "| 5. Back To Main Menu                         |"
+  echo "| 6. Exit                                      |"
+  echo "+----------------------------------------------+"
+  echo -e "Enter Choice: \c"
+  read ch
+  case $ch in
+    1)  selectAll ;;
+    2)  selectCol ;;
+    3)  ;;
+    4)  ;;
+    5) clear; mainMenu ;;
+    6) exit ;;
+    *) echo " Wrong Choice " ; mainMenu;
+  esac
+}
+
+function selectAll {
+  echo -e "Enter Table Name: \c"
+  read tName
+  column -t -s '|' $tName 2>>./.error.log
+  if [[ $? != 0 ]]
+  then
+    echo "Error Displaying Table $tName"
+  fi
+  selectMenu
+}
+
+function selectCol {
+  echo -e "Enter Table Name: \c"
+  read tName
+  echo -e "Enter Column Number: \c"
+  read colNum
+  awk 'BEGIN{FS="|"}{print $'$colNum'}' $tName 
+  selectMenu
+}
 mainMenu
+
