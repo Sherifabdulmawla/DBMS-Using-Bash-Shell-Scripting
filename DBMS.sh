@@ -77,7 +77,7 @@ function dropDB {
 
 function tablesMenu {
   echo -e "\n+--------Tables Menu------------+"
-  echo "| 1. Show Existing Tables           |"
+  echo "| 1. Show Existing Tables       |"
   echo "| 2. Create New Table           |"
   echo "| 3. Insert Into Table          |"
   echo "| 4. Select From Table          |"
@@ -90,7 +90,7 @@ function tablesMenu {
   echo -e "Enter Choice: \c"
   read ch
   case $ch in
-    1)  ls . ;;
+    1)  ls .;tablesMenu ;;
     2)  createTable ;;
     3)  insert;;
     4)  clear; selectMenu ;;
@@ -190,10 +190,11 @@ function insert {
     echo "Table $tableName isn't existed ,choose another Table"
     tablesMenu
   fi
+  start=1
   colsNum=`awk 'END{print NR}' .$tableName`
   sep="|"
   rSep="\n"
-  for i in {1..$colsNum..1}; do
+  for i in {$start..$colsNum}; do
     echo "$i"
     # colName= `awk 'BEGIN{FS="|"}{if(NR==2) print $1}' .$tableName`
     # colType= `awk 'BEGIN{FS="|"}{if(NR==2) print $2}' .$tableName`
@@ -241,8 +242,7 @@ function selectCol {
   read tName
   echo -e "Enter Column Number: \c"
   read colNum
-  awk 'BEGIN{FS="|"}{print $'$colNum'}' $tName 
+  awk 'BEGIN{FS="|"}{print $'$colNum'}' $tName
   selectMenu
 }
 mainMenu
-
