@@ -84,11 +84,9 @@ function tablesMenu {
   echo "| 2. Create New Table           |"
   echo "| 3. Insert Into Table          |"
   echo "| 4. Select From Table          |"
-  echo "| 5. Update Table               |"
-  echo "| 6. Delete From Table          |"
-  echo "| 7. Drop Table                 |"
-  echo "| 8. Back To Main Menu          |"
-  echo "| 9. Exit                       |"
+  echo "| 5. Drop Table                 |"
+  echo "| 6. Back To Main Menu          |"
+  echo "| 7. Exit                       |"
   echo "+-------------------------------+"
   echo -e "Enter Choice: \c"
   read ch
@@ -97,11 +95,9 @@ function tablesMenu {
     2)  createTable ;;
     3)  insert;;
     4)  clear; selectMenu ;;
-    5)  updateTable;;
-    6)  ;;
-    7)  dropTable;;
-    8) clear; cd ../.. 2>>./.error.log; mainMenu ;;
-    9) exit ;;
+    5)  dropTable;;
+    6) clear; cd ../.. 2>>./.error.log; mainMenu ;;
+    7) exit ;;
     *) echo " Wrong Choice " ; tablesMenu;
   esac
 
@@ -241,57 +237,14 @@ function insert {
   tablesMenu
 }
 
-function updateTable {
-  echo -e "Select specific column from TABLE Where FIELD(OPERATOR)VALUE \n"
-  echo -e "Enter Table Name: \c"
-  read tName
-
-  echo -e "Enter FIELD name to set: \c"
-  read setField
-  fid=$(awk 'BEGIN{FS="|"}{if(NR==1){for(i=1;i<=NF;i++){if($i=="'$setField'") print i}}}' $tName)
-  if [[ $fid == "" ]]
-  then
-    echo "Not Found"
-    tablesMenu
-  else
-    echo -e "Enter FIELD name to set: \c"
-    read newValue
-  fi
-
-  echo -e "Enter required FIELD name: \c"
-  read field
-  fid=$(awk 'BEGIN{FS="|"}{if(NR==1){for(i=1;i<=NF;i++){if($i=="'$field'") print i}}}' $tName)
-  if [[ $fid == "" ]]
-  then
-    echo "Not Found"
-    tablesMenu
-  else
-
-    echo -e "\nEnter required VALUE: \c"
-    read val
-    res=$(awk 'BEGIN{FS="|"; ORS="\n"}{if ($'$fid$op$val') print $'$fid'}' $tName 2>>./.error.log |  column -t -s '|')
-    if [[ $res == "" ]]
-    then
-      echo "Value Not Found"
-    else
-      #############I stopped here but check the above ##########################
-      sed -i 's///' $tName 2>>./.error.log |  column -t -s '|'
-    fi
-    tablesMenu
-
-  fi
-
-}
-
 function selectMenu {
   echo -e "\n\n+---------------Select Menu--------------------+"
   echo "| 1. Select All Columns of a Table              |"
   echo "| 2. Select Specific Column from a Table        |"
   echo "| 3. Select From Table under condition          |"
-  echo "| 4. Aggregate Function for a Specific Column   |"
-  echo "| 5. Back To Tables Menu                        |"
-  echo "| 6. Back To Main Menu                          |"
-  echo "| 7. Exit                                       |"
+  echo "| 4. Back To Tables Menu                        |"
+  echo "| 5. Back To Main Menu                          |"
+  echo "| 6. Exit                                       |"
   echo "+----------------------------------------------+"
   echo -e "Enter Choice: \c"
   read ch
@@ -299,10 +252,9 @@ function selectMenu {
     1) selectAll ;;
     2) selectCol ;;
     3) clear; selectCon ;;
-    4) ;;
-    5) clear; tablesMenu ;;
-    6) clear; cd ../.. 2>>./.error.log; mainMenu ;;
-    7) exit ;;
+    4) clear; tablesMenu ;;
+    5) clear; cd ../.. 2>>./.error.log; mainMenu ;;
+    6) exit ;;
     *) echo " Wrong Choice " ; selectMenu;
   esac
 }
@@ -416,3 +368,4 @@ function specCond {
 }
 
 mainMenu
+
