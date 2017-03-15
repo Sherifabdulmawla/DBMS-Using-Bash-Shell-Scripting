@@ -84,9 +84,11 @@ function tablesMenu {
   echo "| 2. Create New Table           |"
   echo "| 3. Insert Into Table          |"
   echo "| 4. Select From Table          |"
-  echo "| 5. Drop Table                 |"
-  echo "| 6. Back To Main Menu          |"
-  echo "| 7. Exit                       |"
+  echo "| 5. Update Table               |"
+  echo "| 6. Delete From Table          |"
+  echo "| 7. Drop Table                 |"
+  echo "| 8. Back To Main Menu          |"
+  echo "| 9. Exit                       |"
   echo "+-------------------------------+"
   echo -e "Enter Choice: \c"
   read ch
@@ -95,9 +97,11 @@ function tablesMenu {
     2)  createTable ;;
     3)  insert;;
     4)  clear; selectMenu ;;
-    5)  dropTable;;
-    6) clear; cd ../.. 2>>./.error.log; mainMenu ;;
-    7) exit ;;
+    5)  updateTable;;
+    6)  deleteFromTable;;
+    7)  dropTable;;
+    8) clear; cd ../.. 2>>./.error.log; mainMenu ;;
+    9) exit ;;
     *) echo " Wrong Choice " ; tablesMenu;
   esac
 
@@ -199,7 +203,7 @@ function insert {
     echo -e "$colName ($colType) = \c"
     read data
 
-    #Validate Input
+    # Validate Input
     if [[ $colType == "int" ]]; then
       while ! [[ $data =~ ^[0-9]*$ ]]; do
         echo -e "invalid DataType !!"
@@ -227,14 +231,82 @@ function insert {
       row=$row$data$sep
     fi
   done
-  echo -e $row >> $tableName
+  echo -e $row"\c" >> $tableName
   if [[ $? == 0 ]]
   then
     echo "Data Inserted Successfully"
   else
     echo "Error Inserting Data into Table $tableName"
   fi
+  row=""
   tablesMenu
+}
+
+function updateTable {
+  echo -e "Enter Table Name: \c"
+  read tName
+  echo -e "Enter Condition Column name: \c"
+  read field
+  fid=$(awk 'BEGIN{FS="|"}{if(NR==1){for(i=1;i<=NF;i++){if($i=="'$field'") print i}}}' $tName)
+  if [[ $fid == "" ]]
+  then
+    echo "Not Found"
+    tablesMenu
+  else
+    echo -e "Enter Condition Value: \c"
+    read val
+    res=$(awk 'BEGIN{FS="|"}{if ($'$fid'=="'$val'") print $'$fid'}' $tName 2>>./.error.log)
+    if [[ $res == "" ]]
+    then
+      echo "Value Not Found"
+      tablesMenu
+    else
+      echo -e "Enter FIELD name to set: \c"
+      read setField
+      setFid=$(awk 'BEGIN{FS="|"}{if(NR==1){for(i=1;i<=NF;i++){if($i=="'$setField'") print i}}}' $tName)
+      if [[ $setFid == "" ]]
+      then
+        echo "Not Found"
+        tablesMenu
+      else
+        echo -e "Enter new Value to set: \c"
+        read newValue
+        NR=$(awk 'BEGIN{FS="|"}{if ($'$fid' == "'$val'") print NR}' $tName 2>>./.error.log)
+        oldValue=$(awk 'BEGIN{FS="|"}{if(NR=='$NR'){for(i=1;i<=NF;i++){if(i=='$setFid') print $i}}}' $tName 2>>./.error.log)
+        echo $oldValue
+        sed -i ''$NR's/'$oldValue'/'$newValue'/g' $tName 2>>./.error.log
+        echo "Row Updated Successfully"
+        tablesMenu
+      fi
+    fi
+  fi
+}
+
+function deleteFromTable {
+  echo -e "Enter Table Name: \c"
+  read tName
+  echo -e "Enter Condition Column name: \c"
+  read field
+  fid=$(awk 'BEGIN{FS="|"}{if(NR==1){for(i=1;i<=NF;i++){if($i=="'$field'") print i}}}' $tName)
+  if [[ $fid == "" ]]
+  then
+    echo "Not Found"
+    tablesMenu
+  else
+    echo -e "Enter Condition Value: \c"
+    read val
+    res=$(awk 'BEGIN{FS="|"}{if ($'$fid'=="'$val'") print $'$fid'}' $tName 2>>./.error.log)
+    if [[ $res == "" ]]
+    then
+      echo "Value Not Found"
+      tablesMenu
+    else
+      NR=$(awk 'BEGIN{FS="|"}{if ($'$fid'=="'$val'") print NR}' $tName 2>>./.error.log)
+      sed -i ''$NR'd' $tName 2>>./.error.log
+      echo "Row Deleted Successfully"
+      tablesMenu
+    fi
+  fi
 }
 
 function selectMenu {
@@ -242,9 +314,10 @@ function selectMenu {
   echo "| 1. Select All Columns of a Table              |"
   echo "| 2. Select Specific Column from a Table        |"
   echo "| 3. Select From Table under condition          |"
-  echo "| 4. Back To Tables Menu                        |"
-  echo "| 5. Back To Main Menu                          |"
-  echo "| 6. Exit                                       |"
+  echo "| 4. Aggregate Function for a Specific Column   |"
+  echo "| 5. Back To Tables Menu                        |"
+  echo "| 6. Back To Main Menu                          |"
+  echo "| 7. Exit                                       |"
   echo "+----------------------------------------------+"
   echo -e "Enter Choice: \c"
   read ch
@@ -252,9 +325,10 @@ function selectMenu {
     1) selectAll ;;
     2) selectCol ;;
     3) clear; selectCon ;;
-    4) clear; tablesMenu ;;
-    5) clear; cd ../.. 2>>./.error.log; mainMenu ;;
-    6) exit ;;
+    4) ;;
+    5) clear; tablesMenu ;;
+    6) clear; cd ../.. 2>>./.error.log; mainMenu ;;
+    7) exit ;;
     *) echo " Wrong Choice " ; selectMenu;
   esac
 }
@@ -368,4 +442,3 @@ function specCond {
 }
 
 mainMenu
-
